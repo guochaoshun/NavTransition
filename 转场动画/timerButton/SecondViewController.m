@@ -60,15 +60,9 @@
 
 - (MyPercentDrivenInteractiveTransition *)interactiveTransition {
     if (_interactiveTransition == nil) {
-        // 此时不能直接取self.navigationController,因为已经pop了,取navigationController取出来的是nil
-        UIResponder *responder = [self nextResponder];
-        NavigationController *nav = nil;
-        while (responder) {
-            if ([responder isKindOfClass:[NavigationController class]]) {
-                nav = (NavigationController *)responder;
-            }
-            responder = [responder nextResponder];
-        }
+        // 保证懒加载在nav的pop之前调用,pop之后再获取self.navigationController就是nil了
+        // 可以在viewDidLoad中调用下懒加载,保证_interactiveTransition被正确赋值了
+        NavigationController *nav = (NavigationController *)self.navigationController;
         _interactiveTransition = nav.transitionAnimation;
     }
     return _interactiveTransition;
